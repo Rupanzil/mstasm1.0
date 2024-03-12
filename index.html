@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MST to ASM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>MST - ASM Conversion Tool</h1>
+    </header>
+    <main>
+        <div class="main">
+            <div class="box td-text">
+                <p>Paste TD file below</p>
+                <textarea id="td-text" placeholder="Paste your td file here..." required></textarea>
+                <button id="process-td">Process TD file</button>
+            </div>
+            <div class="box geometry">
+                <p>Panel Geometry</p>
+                <p id="base-width"></p>
+                <p id="num-of-faces"></p>
+                <textarea class="output" id="asm-panel-geometry" placeholder="copy from here..."></textarea>
+                <button onclick="copyToClipboard('asm-panel-geometry')">Copy</button>
+            </div>
+            <div class="box selected-sections">
+                <p>Selected Sections</p>
+                <textarea class="output" id="asm-selected-sections" placeholder="copy from here..."></textarea>
+                <button onclick="copyToClipboard('asm-selected-sections')">Copy</button>
+            </div>
+            <div class="box panel-sections">
+                <p>Panel Sections</p>
+                <textarea class="output" id="asm-panel-sections" placeholder="copy from here..."></textarea>
+                <button onclick="copyToClipboard('asm-panel-sections')">Copy</button>
+            </div>
+            <div class="box leg-connections">
+                <p>Leg Connection</p>
+                <textarea class="output" id="asm-leg-connection" placeholder="copy from here..."></textarea>
+                <button onclick="copyToClipboard('asm-leg-connection')">Copy</button>
+            </div>
+            <div class="box main-diagonal-connections">
+                <p>Main Diagonal Connection</p>
+                <textarea class="output" id="asm-main-diagonal-connection" placeholder="copy from here..."></textarea>
+                <button onclick="copyToClipboard('asm-main-diagonal-connection')">Copy</button>
+            </div>
+            <div class="box main-horizontal-connections">
+                <p>Main Horizontal Connection</p>
+                <textarea class="output" id="asm-main-horizontal-connection" placeholder="copy from here..."></textarea>
+                <button onclick="copyToClipboard('asm-main-horizontal-connection')">Copy</button>
+            </div>
+            <div class="box secondary-diagonal-connections">
+                <p>Secondary Diagonal Connection</p>
+                <textarea class="output" id="asm-secondary-diagonal-connections" placeholder="copy from here..."></textarea>
+                <button onclick="copyToClipboard('asm-secondary-diagonal-connections')">Copy</button>
+            </div>
+            <div class="box secondary-horizontal-connections">
+                <p>Secondary Horizontal Connection</p>
+                <textarea class="output" id="asm-secondary-horizontal-connections" placeholder="copy from here..."></textarea>
+                <button onclick="copyToClipboard('asm-secondary-horizontal-connections')">Copy</button>
+            </div>
+        </div>
+    </main>
+    <footer></footer>
+    <!-- <script type="module" src="index.js"></script> -->
+    <script type="module" src="script.js"></script>
+    <script>
+        function copyToClipboard(elementId) {
+            const textarea = document.getElementById(elementId);
+            textarea.select();
+            document.execCommand('copy');
+            const button = textarea.nextElementSibling; // Get the sibling button element
+            button.textContent = 'Copied!!';
+            setTimeout(() => {
+                button.textContent = 'Copy';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
