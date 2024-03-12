@@ -9,10 +9,6 @@ let uniqueSections = []
 let allSections = ['RB16.0 235', 'CHS193.7X5.0 235', 'EA40X40X5 235', 'FB40X5 235']
 let uniqueSectionAndGrade = []
 
-// make an array of sections
-// make an array of unique sections
-// make an array of mstIds
-// make an array of asmIds
 
 function createSelectedSections (towerData) {
     // different regex to check the type of section, whether it is EA or CHS or DAS etc.
@@ -125,7 +121,7 @@ function createSections(towerData) {
         // console.log('unique section and grades: ',sectionAndGrade);
         uniqueSections.push(sectionAndGrade)
     });
-    console.log('Uniques section and Grade', uniqueSections);    // #CHECK : grade needs validation whether valid grade or not
+    console.log('Uniques section and Grade', uniqueSectionAndGrade);    // #CHECK : grade needs validation whether valid grade or not
 
 }
 

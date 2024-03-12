@@ -1,3 +1,5 @@
+import { processIdsAndGrade } from "./processMemberIdsAndGrade.js";
+
 function processTowerDataFile(td) {
     // console.log(td)
     // storing each line of the td in a line array
@@ -6,22 +8,15 @@ function processTowerDataFile(td) {
     // removes the leading and trailing whitespaces in a line
     const linesWithSpace = rawlines.filter( str => str.trim() !== '')
     // console.log(linesWithSpace);
-    const lines = linesWithSpace.map( str => str.replace( /^\s+|\s$/g, '' ))
-    // console.log(lines);
+    let lines = linesWithSpace.map( str => str.replace( /^\s+|\s$/g, '' ).toUpperCase())
+
+    lines = processIdsAndGrade(lines)
+    console.log(lines);
 
     // Each line is stored in an array and each word is stored as array within a line array
-    const parts = linesWithSpace.map( line => line.trim().split(/\s+/));
-    const upperCasedLines = []
-    parts.forEach(element => {
-        const upperCasedParts = []
-        element.forEach( word => {
-            let upperCaseWord = word.toUpperCase();
-            upperCasedParts.push(upperCaseWord)
-        })
-        upperCasedLines.push(upperCasedParts)
-    });
-    // console.log(upperCasedLines);
-    return upperCasedLines;
+    const parts = lines.map( line => line.trim().split(/\s+/));
+    console.log('parts :', parts);
+    return parts;
 }
 
 function countPanelNumbers(towerData) {

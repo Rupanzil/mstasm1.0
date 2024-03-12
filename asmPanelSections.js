@@ -2,6 +2,7 @@ import { panelFacesDB } from "./panelFaceDB.js";
 import { uniqueSectionAndGrade } from "./asmSelectedSection.js";
 import { getSecDiagonalsForSameSecDiagonals, getSecDiagonalsForDifferentSecDiagonals } from "./asmSecondaryDiagonals.js";
 import { getSecondaryHorizontals } from "./asmSecondaryHorizontal.js";
+import { processIdsAndGrade } from "./processMemberIdsAndGrade.js";
 
 
 let legMSTIds = [];
@@ -36,17 +37,27 @@ function createLegs(towerData) {
             }
         });  
     });
-    // console.log(legIdAndSections);
-    // console.log('unique sections for ASM panel sections: ', uniqueSectionAndGrade);
+
+    legIdAndSections = processIdsAndGrade(legIdAndSections)
+
+    console.log('leg ids and sections',legIdAndSections);
+    console.log('unique sections for ASM panel sections: ', uniqueSectionAndGrade);
+
+    console.log(typeof uniqueSectionAndGrade[1]);
+
+    uniqueSectionAndGrade.forEach(element => {
+        console.log('test', element);
+    });
 
     legIdAndSections.forEach(element => {
         uniqueSectionAndGrade.forEach((item, index) => {
+            // console.log('here item is ', element, 'and asm to be matched is', item);
             if (item.includes(element)) {
              asmLegId.push(index + 1)
             }
         });
     });
-    // console.log('leg id:', asmLegId);
+    console.log('leg id:', asmLegId);
     return asmLegId;
 }
 
@@ -63,6 +74,8 @@ function createMainDiagonals(towerData) {
             });
         }
     });
+
+    
     // console.log(mainDiagonalIds);
 
     // match the mainDiagonalIds against the MST sections
@@ -79,7 +92,9 @@ function createMainDiagonals(towerData) {
             }
         });  
     });
-    // console.log('main diagonal id and sections' , mainDiagonalIdAndSections);
+
+    mainDiagonalIdAndSections = processIdsAndGrade(mainDiagonalIdAndSections)
+    console.log('main diagonal id and sections' , mainDiagonalIdAndSections);
 
     //match the mainDiagonalIdsAndSections against ASM sections
     let asmMainDiagonalId = []
@@ -165,6 +180,7 @@ function createMainHorizontals(towerData, totalNumberofPanels) {
         });
     });
 
+    console.log('main horizontal ids and sections', mainHorizontalSectionAndGrade);
     //match the mainDiagonalIdsAndSections against ASM sections
     let asmMainHorizontalIds = []
 
