@@ -31,6 +31,16 @@ const panelFacesDB = {
         subdivide: 1,
         legConnection: /LEG/
     },
+    'XH2': {
+        leg: 'LEG',
+        mainDiagonal: 'BR1',
+        mainHorizontal: 0,
+        secondaryDiagonals: 0,
+        secondaryHorizontal: [/\bH\b|\bH1\b/],
+        panelType: 'X',
+        subdivide: 1,
+        legConnection: /LEG/
+    },
     'XH3': {
         leg: 'LEG',
         mainDiagonal: 'BR1',
@@ -49,6 +59,16 @@ const panelFacesDB = {
         secondaryHorizontal: [/\bR4\b/, /\bH1?\b/, /\bR1\b/],
         panelType: 'X',
         subdivide: 3,
+        legConnection: /LEG/
+    },
+    'XTR': {
+        leg: 'LEG',
+        mainDiagonal: 'BR1',
+        mainHorizontal: 0,
+        secondaryDiagonals: ['R3', 'R1', 'R2'],
+        secondaryHorizontal: 0,
+        panelType: 'XD',
+        subdivide: 1,
         legConnection: /LEG/
     },
 

@@ -13,7 +13,7 @@ export function getSecDiagonalsForDifferentSecDiagonals(line, secDiagIdFromDB) {
     let secondaryDiagonalId = [];
     secDiagIdFromDB.forEach(id => {
         line.forEach((word, wordNumber) => {
-            if (word == id) {
+            if (word == id || word == 'R') {
                 secondaryDiagonalId.push(line[wordNumber + 1])
             }
         });

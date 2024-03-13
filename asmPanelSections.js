@@ -232,7 +232,7 @@ function createSecondaryDiagonals(towerData, totalNumberofPanels) {
                     let currentPanelSecDiagId = [panelNumberFromBottom, getSecDiagonalsForSameSecDiagonals(line, panelFacesDB[currentPanelFace].secondaryDiagonals)]              // this should return array like [ panelNumber, secondaryDiagonalIds ]
                     secondaryDiagonalIdsAndSections.unshift(currentPanelSecDiagId)
                 }
-                if (currentPanelFace == 'XH3A' || currentPanelFace == 'K2A') {
+                if (currentPanelFace == 'XH3A' || currentPanelFace == 'K2A' || currentPanelFace == 'XTR') {
                     let currentPanelSecDiagId = [panelNumberFromBottom, getSecDiagonalsForDifferentSecDiagonals(line, panelFacesDB[currentPanelFace].secondaryDiagonals)]              // this should return array like [ panelNumber, secondaryDiagonalIds ]
                     secondaryDiagonalIdsAndSections.unshift(currentPanelSecDiagId)
                 }
