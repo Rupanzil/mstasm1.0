@@ -8,6 +8,11 @@ body {
 h1 {
     font-weight: 600;
     text-align: center;
+    background-color: darkslateblue;
+    color: #fff;
+    margin: 0;
+    margin-bottom: 20px;
+    padding: 10px;
 }
 
 textarea {
