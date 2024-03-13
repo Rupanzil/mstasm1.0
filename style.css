@@ -32,6 +32,18 @@ textarea {
     height: 10vh;
 }
 
+.left-container, .right-container {
+    padding: 10px;
+}
+
+.left-container {
+    box-shadow: 0 0 20px 2px rgb(155, 166, 236);
+    border-radius: 20px;
+}
+
+.right-container {
+    margin-left: 20px;
+}
 .main {
     width: 75vw;
     display: flex;
