@@ -1,8 +1,9 @@
-import { panelFacesDB } from "./panelFaceDB.js";
+import { panelFacesDB, allPanelFacesinDB } from "./panelFaceDB.js";
 import { uniqueSectionAndGrade } from "./asmSelectedSection.js";
 import { getSecDiagonalsForSameSecDiagonals, getSecDiagonalsForDifferentSecDiagonals } from "./asmSecondaryDiagonals.js";
 import { getSecondaryHorizontals } from "./asmSecondaryHorizontal.js";
 import { processIdsAndGrade } from "./processMemberIdsAndGrade.js";
+import { actualPanelFaces } from "./asmPanelGeometry.js";
 
 
 let legMSTIds = [];
@@ -40,13 +41,13 @@ function createLegs(towerData) {
 
     legIdAndSections = processIdsAndGrade(legIdAndSections)
 
-    console.log('leg ids and sections',legIdAndSections);
-    console.log('unique sections for ASM panel sections: ', uniqueSectionAndGrade);
+    // console.log('leg ids and sections',legIdAndSections);
+    // console.log('unique sections for ASM panel sections: ', uniqueSectionAndGrade);
 
-    console.log(typeof uniqueSectionAndGrade[1]);
+    // console.log(typeof uniqueSectionAndGrade[1]);
 
     uniqueSectionAndGrade.forEach(element => {
-        console.log('test', element);
+        // console.log('test', element);
     });
 
     legIdAndSections.forEach(element => {
@@ -57,7 +58,7 @@ function createLegs(towerData) {
             }
         });
     });
-    console.log('leg id:', asmLegId);
+    // console.log('leg id:', asmLegId);
     return asmLegId;
 }
 
@@ -94,7 +95,7 @@ function createMainDiagonals(towerData) {
     });
 
     mainDiagonalIdAndSections = processIdsAndGrade(mainDiagonalIdAndSections)
-    console.log('main diagonal id and sections' , mainDiagonalIdAndSections);
+    // console.log('main diagonal id and sections' , mainDiagonalIdAndSections);
 
     //match the mainDiagonalIdsAndSections against ASM sections
     let asmMainDiagonalId = []
@@ -113,27 +114,35 @@ function createMainDiagonals(towerData) {
 let panelFacesHavingMainHorizontals = []
 let panelFacesNotHavingMainHorizontals = []
 let mainHorizontalIdsAndPanelNumber = []
+
 function createMainHorizontals(towerData, totalNumberofPanels) {
     // list of panel types of MST which have main horizontals from the panelFaceDB
     // go through each panelFace in panelFaceDB and check if it has mainHorizontal
+
     Object.keys(panelFacesDB).forEach( panelFace => {
         const panel = panelFacesDB[panelFace]
         if (panel.mainHorizontal != 0) {
             panelFacesHavingMainHorizontals.push(panelFace)
         } else panelFacesNotHavingMainHorizontals.push(panelFace)
     })
+
     // console.log('Panels which do not have main horizontals ', panelFacesNotHavingMainHorizontals);
     // main horizontals can be created either from H1 of the panels having main horizontals like X
     // or from the panels which don't have main horizontal but have PB1 plan bracings
     // create array of all H1 or H ids from MST
     // FACE XH1 LEG 111 BR1 211 H1 311
+
     let panelNumberFromBottom = totalNumberofPanels
+    console.log('These are the actual panel faces in the tower:', actualPanelFaces);
+    console.log('Panels having horizontals: ', panelFacesHavingMainHorizontals);
+    console.log('Panels not having horizontals: ', panelFacesNotHavingMainHorizontals);
+
     towerData.forEach( (line, lineNumber) => {
         let isPanelProcessed = false;
-        if( line.includes('FACE') ) {               // 'FACE' is only included in the panel sections
-            let currentPanelFace = line[1]
-            // console.log('Current Panel Face: ',currentPanelFace, ', Current Panel Number from bottom : ', panelNumberFromBottom);
-
+        if( line.includes('FACE') ) {  
+            // console.log('Current Line :', line.join(' '));             // 'FACE' is only included in the panel sections
+            let currentPanelFace = actualPanelFaces[panelNumberFromBottom - 1]
+            // console.log('Panel Face being processed', currentPanelFace);
             // if the current panel face belongs to the family of panels which have a main horizontal then take the H1 or H ids
             // need to take the panel number as well to place it in proper position in asm
             // if the current panel face does not belong to the family of panels having main horizontals then check if the panel
@@ -141,8 +150,8 @@ function createMainHorizontals(towerData, totalNumberofPanels) {
             if (panelFacesHavingMainHorizontals.includes(currentPanelFace)) {
                 // console.log('This is a regex', panelFacesDB[currentPanelFace].mainHorizontal, 'currentPanelFace', currentPanelFace)
                 line.forEach( (word, wordNumber) => {
-                    if ( word == 'H' || word == 'H1') {
-                        let mainHorizontalId = line[wordNumber + 1]
+                    if ( word.match(/\bH1?\b/)) {
+                        let mainHorizontalId = parseInt(line[wordNumber + 1])
                         mainHorizontalIdsAndPanelNumber.push([panelNumberFromBottom, mainHorizontalId])
                     }
                 });
@@ -150,9 +159,9 @@ function createMainHorizontals(towerData, totalNumberofPanels) {
                 const currentLine = towerData[lineNumber + 1]
                 currentLine.forEach((word, wordNumber) => {
                     // XIP plan is only present in X faces so the PB1 of these PLAN cannot be main horizontals
-                    if (!currentLine.includes('XIP')) {
+                    if (!currentLine.includes('XIP') && (!currentLine.includes('BTM'))) {
                         if (word == 'PB1' || word == 'PB') {
-                            mainHorizontalIdsAndPanelNumber.push([panelNumberFromBottom, currentLine[wordNumber + 1]])
+                            mainHorizontalIdsAndPanelNumber.push([panelNumberFromBottom, parseInt(currentLine[wordNumber + 1])])
                         }
                     } else if (!isPanelProcessed) {
                         mainHorizontalIdsAndPanelNumber.push([panelNumberFromBottom, 0])
@@ -165,6 +174,7 @@ function createMainHorizontals(towerData, totalNumberofPanels) {
             panelNumberFromBottom--;
         }
     })
+    console.log('Main hor panel Id and panel number: ', mainHorizontalIdsAndPanelNumber);
 
     // match the mainHorizontalIdsAndPanelNumbers against the sections
     let mainHorizontalSectionAndGrade = []
@@ -173,7 +183,7 @@ function createMainHorizontals(towerData, totalNumberofPanels) {
         if (mainHorizontal[1] === 0) {
             mainHorizontalSectionAndGrade.unshift([mainHorizontal[0], mainHorizontal[1]])
         } else towerData.forEach(line => {
-            if (line.includes(mainHorizontal[1]) && line.includes('CONNECT')) {      // checks the main hor id with section data
+            if (line.includes(String(mainHorizontal[1])) && line.includes('CONNECT')) {      // checks the main hor id with section data
                 // console.log('Horizontal section data: ', line);
                 mainHorizontalSectionAndGrade.unshift([mainHorizontal[0], `${line[1]} ${line[6]}`])
             }
@@ -196,7 +206,7 @@ function createMainHorizontals(towerData, totalNumberofPanels) {
         }
     });
 
-    // console.log('ASM main horizontals id', asmMainHorizontalIds);
+    console.log('ASM main horizontals id', asmMainHorizontalIds);
     return asmMainHorizontalIds;
 }
 let panelHavingSecondayDiagonals = []
@@ -219,20 +229,21 @@ function createSecondaryDiagonals(towerData, totalNumberofPanels) {
     
     // for secondary diagonals and secondary horizontals it is better to write separate logic for each panel face
     let panelNumberFromBottom = totalNumberofPanels
+    console.log('Actual converted panel faces: ', actualPanelFaces);
     
     towerData.forEach((line,lineNumber) => {
         if (line.includes('FACE')) {
-            let currentPanelFace = line[1]
+            let currentPanelFace = actualPanelFaces[panelNumberFromBottom - 1]
             // the first group of panels will include those faces which don't have secondary diagonals
             if (panelsNotHavingSecondaryDiagonals.includes(currentPanelFace)) {
                 secondaryDiagonalIdsAndSections.unshift([panelNumberFromBottom, 0])
             }
             if (panelHavingSecondayDiagonals.includes(currentPanelFace)) {
-                if (currentPanelFace == 'XH3' || currentPanelFace == 'K1' || currentPanelFace == 'K2') {
+                if (currentPanelFace == 'XH3' || currentPanelFace == 'K1' || currentPanelFace == 'K2' || currentPanelFace == 'M2') {
                     let currentPanelSecDiagId = [panelNumberFromBottom, getSecDiagonalsForSameSecDiagonals(line, panelFacesDB[currentPanelFace].secondaryDiagonals)]              // this should return array like [ panelNumber, secondaryDiagonalIds ]
                     secondaryDiagonalIdsAndSections.unshift(currentPanelSecDiagId)
                 }
-                if (currentPanelFace == 'XH3A' || currentPanelFace == 'K2A' || currentPanelFace == 'XTR') {
+                if (currentPanelFace == 'XH3A' || currentPanelFace == 'K2A' || currentPanelFace == 'XTR' || currentPanelFace == 'M2A') {
                     let currentPanelSecDiagId = [panelNumberFromBottom, getSecDiagonalsForDifferentSecDiagonals(line, panelFacesDB[currentPanelFace].secondaryDiagonals)]              // this should return array like [ panelNumber, secondaryDiagonalIds ]
                     secondaryDiagonalIdsAndSections.unshift(currentPanelSecDiagId)
                 }
@@ -298,18 +309,19 @@ function createSecondaryHorizontals(towerData, totalNumberofPanels) {
     // separate the panels having and not having direct secondary horizontal
     // if direct sec hor not present then check whether it is X type and has XIP plan bracing or not
     let panelNumberFromBottom = totalNumberofPanels
+
     towerData.forEach((line,lineNumber) => {
         if (line.includes('FACE')) {
-            let currentPanelFace = line[1];
+            let currentPanelFace = actualPanelFaces[panelNumberFromBottom - 1];
             if (panelsHavingSecHorizontals.includes(currentPanelFace)) {
                 // console.log('These faces have sec horizontals', currentPanelFace);
                 let currentSecPanelAndHorizontalId = getSecondaryHorizontals(line, panelFacesDB[currentPanelFace].secondaryHorizontal)
                 secHorizontalPanelNumberAndId.unshift([panelNumberFromBottom, currentSecPanelAndHorizontalId])
             } else if (currentPanelFace == 'X' || currentPanelFace == 'X0') {
-                if (towerData[lineNumber + 1].includes('XIP')) {
+                if (towerData[lineNumber + 1].includes('XIP') || towerData[lineNumber + 2].includes('XIP')) {
                     towerData[lineNumber + 1].forEach((word, wordNumber) => {
                         if ( word == 'PB' || word == 'PB1' ) {
-                            let currentSecPanelAndHorizontalId = [towerData[lineNumber + 1][wordNumber + 1]]
+                            let currentSecPanelAndHorizontalId = [parseInt(towerData[lineNumber + 1][wordNumber + 1])]
                             secHorizontalPanelNumberAndId.unshift([panelNumberFromBottom, currentSecPanelAndHorizontalId])
                         }
                     });
@@ -320,7 +332,8 @@ function createSecondaryHorizontals(towerData, totalNumberofPanels) {
             panelNumberFromBottom--;
         }
     });
-    // console.log('sec hor panel number and id',secHorizontalPanelNumberAndId);
+
+    console.log('sec hor panel number and id',secHorizontalPanelNumberAndId);
 
     // match the secHorizontalIds with section data and grade
     let secondaryHorizontalSectionAndGrade = []
@@ -331,16 +344,25 @@ function createSecondaryHorizontals(towerData, totalNumberofPanels) {
         } else {
             let currentPanelSecHorizontalSection = []
             secHorizontal[1].forEach(secHorizontalId => {
-                towerData.forEach(line => {
-                    if(line.includes(secHorizontalId) && line.includes('CONNECT')) {
-                        currentPanelSecHorizontalSection.push(`${line[1]} ${line[6]}`)
-                    }
-                });
+                if (!secHorizontalId == 0) {
+                    console.log('Sec Horizontal Id is: ', secHorizontalId);
+
+                    towerData.forEach(line => {
+                        if(line.includes(String(secHorizontalId)) && line.includes('CONNECT')) {
+                            console.log('Current line being matched here is :', line);
+                            currentPanelSecHorizontalSection.push(`${line[1]} ${line[6]}`)
+                        }
+                    });
+
+                } else {
+                    currentPanelSecHorizontalSection.push(0)
+                }
             });
             secondaryHorizontalSectionAndGrade.push(currentPanelSecHorizontalSection)
         }
     });
-    // console.log('secondary hor section and grade',secondaryHorizontalSectionAndGrade);
+
+    console.log('secondary hor section and grade',secondaryHorizontalSectionAndGrade);
 
     // match the secondary horizontal sections and grade with unique section and grade
     let asmSecondaryHorizontalIds = []
@@ -375,12 +397,13 @@ export function createPanelSection(towerData, topElevations, totalNumberofPanels
     const asmSecondaryHorizontalIds = createSecondaryHorizontals(towerData, totalNumberofPanels)
 
     let asmPanelSections = [];
+
     for (let i = 0; i < totalNumberofPanels; i++) {
         let currentPanelSectionLine = `${topElevations[i]}\t${asmLegIds[i]}\t${asmMainDiagonalIds[i]}\t${asmMainHorizontalIds[i]}\t${asmSecondaryDiagonalIds[i]}\t${asmSecondaryHorizontalIds[i]}`
         asmPanelSections.push(currentPanelSectionLine)
     }
-    asmPanelSections = asmPanelSections.join('-')
-    asmPanelSections = asmPanelSections.replaceAll('-', '\n')
+
+    asmPanelSections = asmPanelSections.join('\n')
     // console.log(asmPanelSections);
     return asmPanelSections;
 }

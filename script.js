@@ -47,16 +47,12 @@ panelHeightsFromBottom.forEach( (panelHeight) => {
 // create an array containing the number of panels in each section
 const panelsInSection = getPanelsInSection(towerData)
 
-
 // create an array containing all the tower faces
 const panelFaces = getPanelFaces(towerData)
 
 //create an array to get the top widths of the panels
 //   if tw is present for a panel, then store it otherwise store ' '
 const topWidths = getPanelTopWidths(towerData)
-
-// process the panel specific information into asm specific info
-
 
 // +++++++++++ GEOMETRY PART +++++++++++
 

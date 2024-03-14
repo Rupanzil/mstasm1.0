@@ -5,7 +5,7 @@ export function getSecondaryHorizontals(line, secHorRegexArray) {
         line.forEach((word, wordNumber) => {
             if (regex.test(word)) {
                 // console.log('sec hor id: ',line[wordNumber+1]);
-                secHorIds.push(line[wordNumber+1])
+                secHorIds.push(parseInt(line[wordNumber+1]))
             }
         });
     });

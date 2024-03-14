@@ -1,4 +1,5 @@
 import { panelFacesDB } from "./panelFaceDB.js";
+import { getBoltDia, getBoltConnectionType, getBoltGrade } from "./boltDataProcessing.js";
 
 
 let panelBaseElevations = [0]
@@ -40,13 +41,13 @@ function getMainDiagonalBolts(towerData, mainDiagonalBaseElevation, mainDiagonal
                     if (!isNaN(mainBracingBolts)) {
                         mainDiagonalBolts.unshift(mainBracingBolts)
 
-                        const boltDia = getMainDiagonalBoltDia(line[wordNumber + 2])
+                        const boltDia = getBoltDia(line[wordNumber + 2])
                         mainDiagonalBoltDia.unshift(boltDia)
 
-                        const boltGrade = getMainDiagonalBoltGrade(line[wordNumber + 2])
+                        const boltGrade = getBoltGrade(line[wordNumber + 2])
                         mainDiagonalBoltGrade.unshift(boltGrade)
 
-                        const boltConnectionType = getMainDiagonalBoltConnectionType(line[wordNumber + 2])
+                        const boltConnectionType = getBoltConnectionType(line[wordNumber + 2])
                         mainDiagonalBoltConnectionType.unshift(boltConnectionType)
                     }
                 }
@@ -66,61 +67,6 @@ function getMainDiagonalBolts(towerData, mainDiagonalBaseElevation, mainDiagonal
 
     asmMainDiagonalConnections = asmMainDiagonalConnections.join('\n')
     return asmMainDiagonalConnections;
-}
-
-function getMainDiagonalBoltDia(boltData) {
-    // console.log('panel data: ', boltData);
-    const mainDiagonalBoltDataAndGrade = boltData.split('-')
-    const boltDia = parseInt(mainDiagonalBoltDataAndGrade[0].match(/\d+/))
-    return boltDia
-}
-
-function getMainDiagonalBoltGrade(boltData) {
-    // console.log('panel data: ', boltData);
-    const mainDiagonalBoltDataAndGrade = boltData.split('-')
-    let boltGrade;
-    if (mainDiagonalBoltDataAndGrade[1].length == 1) {
-        boltGrade = mainDiagonalBoltDataAndGrade[1]
-    } else {
-        const lastCharacter = mainDiagonalBoltDataAndGrade[1].charAt(mainDiagonalBoltDataAndGrade[1].length -1)
-        // console.log(lastCharacter);
-        if (lastCharacter == 0) {
-            boltGrade = mainDiagonalBoltDataAndGrade[1]
-        } else {
-            boltGrade = mainDiagonalBoltDataAndGrade[1].slice(0,-1)
-        }
-    }
-
-    //Check for the grade and returns ASM grade value
-    if (boltGrade == '4') {
-        return 'Class 4.8'
-    } else if (boltGrade == '5') {
-        return 'Grade 5.6/5.8'
-    } else if (boltGrade == '6') {
-        return 'Class 6.8'
-    } else if (boltGrade == '8') {
-        return 'Grade 8.8'
-    } if (boltGrade == '10') {
-        return 'Class 10.9'
-    } else return 'Grade not in ASM DataBase'
-}
-
-function getMainDiagonalBoltConnectionType(BoltData) {
-    const BoltDataAndGrade = BoltData.split('-')
-    let boltConnectionType;
-    if (BoltDataAndGrade[1].length == 1) {
-        boltConnectionType = 'S.SHEAR'
-    } else {
-        const lastCharacter = BoltDataAndGrade[1].charAt(BoltDataAndGrade[1].length - 1)
-        if (lastCharacter == 2) {
-            boltConnectionType = 'D.SHEAR'
-        } else if (lastCharacter == 0) {              // if grade 10
-            boltConnectionType = 'S.SHEAR'
-        } else if (lastCharacter == 'T') {
-            boltConnectionType = 'TENSION'
-        } else boltConnectionType = 'Error in Connection Type'
-    }
-    return boltConnectionType
 }
 
 export { panelBaseElevations }

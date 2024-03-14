@@ -29,7 +29,7 @@ export function getBoltGrade(boltData) {
     } else if (boltGrade == '6') {
         return 'Class 6.8'
     } else if (boltGrade == '8') {
-        return 'Grade 8.8'
+        return 'Class 8.8'
     } if (boltGrade == '10') {
         return 'Class 10.9'
     } else return 'Grade not in ASM DataBase'

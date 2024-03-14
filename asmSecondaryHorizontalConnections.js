@@ -7,6 +7,8 @@ for these two faces the H bolts will be considered.
 
 import { panelsHavingSecondaryHorizontals, panelsNotHavingSecondaryHorizontals, panelFacesDB } from "./panelFaceDB.js";
 import { getBoltDia, getBoltGrade, getBoltConnectionType } from "./boltDataProcessing.js";
+import { actualPanelFaces } from "./asmPanelGeometry.js";
+import { totalNumberofPanels } from "./tdprocessor.js";
 
 
 let secondaryHorizontalBoltNumber = []
@@ -14,13 +16,15 @@ let secondaryHorizontalBoltGrade = []
 let secondaryHorizontalBoltDia = []
 let secondaryHorizontalBolConnectionType = []
 let asmSecondaryHorizontalBolts = []
-const secondaryHorizontalIsH1 = ['XH1','XH3', 'XH3A']
+const secondaryHorizontalIsH1 = ['XH1','XH3', 'XH3A', 'XH2']
 
 export function createSecondaryHorizontalConnections(towerData, panelBaseElevations, panelElevations) {
+    let panelNumberFromBottom = totalNumberofPanels
 
     towerData.forEach((line, lineNumber) => {
         if (line.includes('FACE')) {
-            const currentPanelFace = line[1];
+            const currentPanelFace = actualPanelFaces[panelNumberFromBottom - 1];
+            console.log('current panel face here is ', currentPanelFace);
             if (panelsHavingSecondaryHorizontals.includes(currentPanelFace)) {
                 // XH3 and XH3A are processed separately
                 if (secondaryHorizontalIsH1.includes(currentPanelFace)) {
@@ -31,14 +35,16 @@ export function createSecondaryHorizontalConnections(towerData, panelBaseElevati
             } else if (panelsNotHavingSecondaryHorizontals.includes(currentPanelFace)) {
                 processBoltsForNoSecondaryHorizontals();
             }
+            panelNumberFromBottom--;
         }
     });
-    // console.log(panelsHavingSecondaryHorizontals, panelsNotHavingSecondaryHorizontals);
     
-    // console.log('Number of bolts: ', secondaryHorizontalBoltNumber);
-    // console.log('Grade of bolts: ', secondaryHorizontalBoltGrade);
-    // console.log('dia of bolts: ', secondaryHorizontalBoltDia);
-    // console.log('connection type of bolts: ', secondaryHorizontalBolConnectionType);
+    console.log(panelsHavingSecondaryHorizontals, panelsNotHavingSecondaryHorizontals);
+    
+    console.log('Number of bolts: ', secondaryHorizontalBoltNumber);
+    console.log('Grade of bolts: ', secondaryHorizontalBoltGrade);
+    console.log('dia of bolts: ', secondaryHorizontalBoltDia);
+    console.log('connection type of bolts: ', secondaryHorizontalBolConnectionType);
 
     panelBaseElevations.forEach((baseElevation, i) => {
         const currentLine = `${baseElevation}\t${panelElevations[i]}\t${secondaryHorizontalBolConnectionType[i]}\t${secondaryHorizontalBoltNumber[i]}\t${secondaryHorizontalBoltDia[i]}\t\t\t${secondaryHorizontalBoltGrade[i]}\tYES\t1\t0\tNO\t0\t\t\tSINGLE THICK.\tSINGLE THICK.`
@@ -52,7 +58,7 @@ export function createSecondaryHorizontalConnections(towerData, panelBaseElevati
 }
 
 function processBoltsForH1(towerData, lineNumber) {
-
+    console.log('bolts processed for H1');
     for ( let i = lineNumber; i < lineNumber + 5; i++) {
         if (towerData[i].join(' ').match(/\bBOLT\b.*\bH1?\b/)) {
 
@@ -60,18 +66,31 @@ function processBoltsForH1(towerData, lineNumber) {
                 if (word.match(/\bH1?\b/)) {
                     const boltNumber = parseInt(towerData[i][wordNumber + 1])
                     if (!isNaN(boltNumber)) {
-                        secondaryHorizontalBoltNumber.unshift(boltNumber)
+                        if (boltNumber === 0) {
+                            const boltData = 'M12-8'
+                            secondaryHorizontalBoltNumber.unshift(boltNumber)
         
-                        const boltData = towerData[i][wordNumber + 2]
+                            const boltDia = getBoltDia(boltData)
+                            secondaryHorizontalBoltDia.unshift(boltDia)
+                            
+                            const boltGrade = getBoltGrade(boltData)
+                            secondaryHorizontalBoltGrade.unshift(boltGrade)
+                            
+                            const boltConnectionType =  getBoltConnectionType(boltData)
+                            secondaryHorizontalBolConnectionType.unshift(boltConnectionType)
+                        } else {
+                            const boltData = towerData[i][wordNumber + 2]
+                            secondaryHorizontalBoltNumber.unshift(boltNumber)
         
-                        const boltDia = getBoltDia(boltData)
-                        secondaryHorizontalBoltDia.unshift(boltDia)
-                        
-                        const boltGrade = getBoltGrade(boltData)
-                        secondaryHorizontalBoltGrade.unshift(boltGrade)
-                        
-                        const boltConnectionType =  getBoltConnectionType(boltData)
-                        secondaryHorizontalBolConnectionType.unshift(boltConnectionType)
+                            const boltDia = getBoltDia(boltData)
+                            secondaryHorizontalBoltDia.unshift(boltDia)
+                            
+                            const boltGrade = getBoltGrade(boltData)
+                            secondaryHorizontalBoltGrade.unshift(boltGrade)
+                            
+                            const boltConnectionType =  getBoltConnectionType(boltData)
+                            secondaryHorizontalBolConnectionType.unshift(boltConnectionType)
+                        }
                     }
                     return;
                 }
@@ -89,34 +108,46 @@ function processBoltsForH1(towerData, lineNumber) {
 }
 
 function processBoltsForR1(towerData, lineNumber, currentPanelFace) {
-
+    console.log('bolts processed for R1');
     for ( let i = lineNumber; i < lineNumber + 5; i++) {
-        if (towerData[i].join(' ').match(/\bBOLT\b.*\bR1\b/)) {
+        if (towerData[i].join(' ').match(/\bBOLT\b.*\bR1?\b/)) {
             const secHorizontalIdRegex = panelFacesDB[currentPanelFace]['secondaryHorizontal'][0]      
 
             towerData[i].forEach((word, wordNumber) => {
                 if (word.match(secHorizontalIdRegex) ) {
                     const boltNumber = parseInt(towerData[i][wordNumber + 1])
                     if (!isNaN(boltNumber)) {
-                        const boltData = towerData[i][wordNumber + 2]
-                        
-                        secondaryHorizontalBoltNumber.unshift(boltNumber)
-    
-                        const boltDia = getBoltDia(boltData)
-                        secondaryHorizontalBoltDia.unshift(boltDia)
-                        
-                        const boltGrade = getBoltGrade(boltData)
-                        secondaryHorizontalBoltGrade.unshift(boltGrade)
-                        
-                        const boltConnectionType =  getBoltConnectionType(boltData)
-                        secondaryHorizontalBolConnectionType.unshift(boltConnectionType)
+                        if (boltNumber === 0) {
+                            const boltData = 'M12-8'
+                            secondaryHorizontalBoltNumber.unshift(boltNumber)
+        
+                            const boltDia = getBoltDia(boltData)
+                            secondaryHorizontalBoltDia.unshift(boltDia)
+                            
+                            const boltGrade = getBoltGrade(boltData)
+                            secondaryHorizontalBoltGrade.unshift(boltGrade)
+                            
+                            const boltConnectionType =  getBoltConnectionType(boltData)
+                            secondaryHorizontalBolConnectionType.unshift(boltConnectionType)
+                        } else {
+                            const boltData = towerData[i][wordNumber + 2]
+                            secondaryHorizontalBoltNumber.unshift(boltNumber)
+        
+                            const boltDia = getBoltDia(boltData)
+                            secondaryHorizontalBoltDia.unshift(boltDia)
+                            
+                            const boltGrade = getBoltGrade(boltData)
+                            secondaryHorizontalBoltGrade.unshift(boltGrade)
+                            
+                            const boltConnectionType =  getBoltConnectionType(boltData)
+                            secondaryHorizontalBolConnectionType.unshift(boltConnectionType)
+                        }
+
                     }
                     return;
                 }
             });
 
-        } else if (towerData[i].join(' ').match(/\bBOLT\b.*\bLEG\b/)) {
-            processBoltsForNoSecondaryHorizontals();
         }
         if (towerData[i].join(' ').match(/\bPANEL\b.*\bHT\b/)) {
             return;
@@ -126,6 +157,7 @@ function processBoltsForR1(towerData, lineNumber, currentPanelFace) {
 }
 
 function processBoltsForNoSecondaryHorizontals() {
+    console.log('Bolts processed for no sec horizontals');
     const numberOfBolts = 0
     secondaryHorizontalBoltNumber.unshift(numberOfBolts)
     

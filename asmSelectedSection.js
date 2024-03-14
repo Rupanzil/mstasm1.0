@@ -38,7 +38,7 @@ function createSelectedSections (towerData) {
     
 
     
-    console.log('Unique sections', uniqueSections);
+    // console.log('Unique sections', uniqueSections);
 
     uniqueSections.forEach((section,index) => {
         // for now this will work only with equal angles and later we can add checks to include CHS or other types of sections.
@@ -102,7 +102,7 @@ function createSections(towerData) {
             });
         }
     });
-    console.log('array containing all sections: ', allSections);
+    // console.log('array containing all sections: ', allSections);
     
     // create an array which only has unique sections and grades
     const set = new Set(allSections)
@@ -113,7 +113,7 @@ function createSections(towerData) {
         return str.replace(/(\d)X(\d)/g, '$1x$2');
     });
 
-    console.log('This is a set created from all sections', arraySet);
+    // console.log('This is a set created from all sections', arraySet);
 
     arraySet.forEach(element => {
         uniqueSectionAndGrade.push(element)
@@ -121,7 +121,7 @@ function createSections(towerData) {
         // console.log('unique section and grades: ',sectionAndGrade);
         uniqueSections.push(sectionAndGrade)
     });
-    console.log('Uniques section and Grade', uniqueSectionAndGrade);    // #CHECK : grade needs validation whether valid grade or not
+    // console.log('Uniques section and Grade', uniqueSectionAndGrade);    // #CHECK : grade needs validation whether valid grade or not
 
 }
 

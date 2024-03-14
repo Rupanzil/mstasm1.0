@@ -11,14 +11,14 @@ function processTowerDataFile(td) {
     let lines = linesWithSpace.map( str => str.replace( /^\s+|\s$/g, '' ).toUpperCase())
 
     lines = processIdsAndGrade(lines)
-    console.log(lines);
+    // console.log(lines);
 
     // Each line is stored in an array and each word is stored as array within a line array
     const parts = lines.map( line => line.trim().split(/\s+/));
-    console.log('parts :', parts);
+    // console.log('parts :', parts);
     return parts;
 }
-
+let totalNumberofPanels;
 function countPanelNumbers(towerData) {
     let panelCount = 0;
 
@@ -29,6 +29,7 @@ function countPanelNumbers(towerData) {
             panelCount++;
         }
     });
+    totalNumberofPanels = panelCount
     return panelCount;
 }
 
@@ -37,7 +38,8 @@ function getPanelHeights(towerData) {
     towerData.forEach( line => {
         line.forEach( (element, index) => {
             if (element === 'HT') {
-                panelHeights.push(line[index + 1])
+                const panelHeight = parseFloat(line[index + 1])
+                panelHeights.push(panelHeight.toFixed(2))
             }
         });
     });
@@ -49,7 +51,7 @@ function getPanelsInSection(towerData) {
     let panelCountInSection = 0;
     for (let index = 0; index < towerData.length; index++) {
         const line = towerData[index];
-        if (line.includes('SECTION') || line.includes('END')) {
+        if (line.join(' ').match(/\$?SECTION\s+\d+/) || line.includes('END')) {
             if (panelCountInSection > 0) {
                 panelInSections.push(panelCountInSection)
                 panelCountInSection = 0
@@ -70,6 +72,7 @@ function getNumberofFaces(towerData) {
             numberOfFaces = line[line.length - 1]
         }
     })
+    checkInvertedPanels(towerData)
     return numberOfFaces;
 }
 
@@ -127,27 +130,18 @@ function getPanelTopWidths(towerData) {
     return panelTopWidthsFromBottom;
 }
 
-// const sectionData = {}
-// function getUniqueSections(towerData) {
-//     let sections = [];
-//     let uniqueSections = []
-//     towerData.forEach(line => {
-//         if (line.includes('BH')) {
-//             sections.push(line[1])
-//             let sectionId = line[0]
-//             sectionData[sectionId]['sectionType'] = 'EA'
-//         }
-//     });
-//     // need to create object using constructor
-//     sections.forEach( item => {
-//         if ( !uniqueSections.includes(item)) {
-//             uniqueSections.push(item)
-//         }
-//     })
-//     console.log(uniqueSections);    // cross check this array with the section DB of ASM tower
-//     console.log(sectionData);
+// check for inverted panels and make an array
+let invertedOrNot = []
 
-// }
+function checkInvertedPanels(towerData) {
+    towerData.forEach( line => {
+        if (line.join(' ').match(/^(?=.*\bFACE\b)(?=.*\bINV(?:ERT)?\b).*/)) {
+            invertedOrNot.unshift(true)
+        } else if (line.join(' ').match(/\bFACE\b/)) {
+            invertedOrNot.unshift(false)
+        }
+    });
+}
 
 export { 
     processTowerDataFile, 
@@ -158,4 +152,6 @@ export {
     getPanelFaces,
     getPanelTopWidths,
     getBaseWidth,
+    invertedOrNot,
+    totalNumberofPanels
 } ;

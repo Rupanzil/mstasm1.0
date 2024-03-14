@@ -9,7 +9,16 @@ const panelFacesDB = {
         secondaryHorizontal: 0,
         panelType: 'X',
         subdivide: 0,
-        legConnection: /LEG/
+    },
+    // apparently, X0 and XO both are same
+    'XO': {
+        leg: 'LEG',
+        mainDiagonal: 'BR1',
+        mainHorizontal: 0,
+        secondaryDiagonals: 0,
+        secondaryHorizontal: 0,
+        panelType: 'X',
+        subdivide: 0,
     },
     'X': {
         leg: 'LEG',
@@ -19,7 +28,6 @@ const panelFacesDB = {
         secondaryHorizontal: 0,
         panelType: 'X',
         subdivide: 0,
-        legConnection: /LEG/
     },
     'XH1': {
         leg: 'LEG',
@@ -135,6 +143,15 @@ const panelFacesDB = {
         subdivide: 0,
         legConnection: /LEG/
     },
+    'DLO': {
+        leg: 'LEG',
+        mainDiagonal: 'BR1',
+        mainHorizontal: 0,
+        secondaryDiagonals: 0,
+        secondaryHorizontal: 0,
+        panelType: 'S',
+        subdivide: 0,
+    },
     'DR': {
         leg: 'LEG',
         mainDiagonal: 'BR1',
@@ -143,7 +160,6 @@ const panelFacesDB = {
         secondaryHorizontal: 0,
         panelType: 'Z',
         subdivide: 0,
-        legConnection: /LEG/
     },
     'DR0': {
         leg: 'LEG',
@@ -153,7 +169,15 @@ const panelFacesDB = {
         secondaryHorizontal: 0,
         panelType: 'Z',
         subdivide: 0,
-        legConnection: /LEG/
+    },
+    'DRO': {
+        leg: 'LEG',
+        mainDiagonal: 'BR1',
+        mainHorizontal: 0,
+        secondaryDiagonals: 0,
+        secondaryHorizontal: 0,
+        panelType: 'Z',
+        subdivide: 0,
     },
     
     // ------------ M-Faces----------------
@@ -175,16 +199,36 @@ const panelFacesDB = {
         panelType: 'V',
         subdivide: 1
     },
+    'M2': {
+        leg: 'LEG',
+        mainDiagonal: 'BR1',
+        mainHorizontal: /H|H1/,
+        secondaryDiagonals: /\bR1?\b/,
+        secondaryHorizontal: [/\bR1?/],
+        panelType: 'V',
+        subdivide: 2
+    },
+    'M2A': {
+        leg: 'LEG',
+        mainDiagonal: 'BR1',
+        mainHorizontal: /H|H1/,
+        secondaryDiagonals: ['R4', 'R2'],
+        secondaryHorizontal: [/\bR3?\b/, /\bR1?\b/],
+        panelType: 'V',
+        subdivide: 2,
+    },
 }
 
 let panelsHavingSecondaryHorizontals = []
 let panelsNotHavingSecondaryHorizontals = []
+let allPanelFacesinDB = []
 
 Object.keys(panelFacesDB).forEach( panelFace => {
     const panel = panelFacesDB[panelFace]
+    allPanelFacesinDB.push(panelFace)
     if (panel.secondaryHorizontal == 0) {
         panelsNotHavingSecondaryHorizontals.push(panelFace)
     } else panelsHavingSecondaryHorizontals.push(panelFace)
 })
 
-export { panelsHavingSecondaryHorizontals, panelsNotHavingSecondaryHorizontals, panelFacesDB }
+export { panelsHavingSecondaryHorizontals, panelsNotHavingSecondaryHorizontals, panelFacesDB, allPanelFacesinDB }

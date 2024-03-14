@@ -1,5 +1,8 @@
 import { panelFacesHavingMainHorizontals, panelFacesNotHavingMainHorizontals } from "./asmPanelSections.js";
 import { panelBaseElevations } from "./asmMainDiagonalConnections.js";
+import { getBoltGrade, getBoltDia, getBoltConnectionType } from "./boltDataProcessing.js";
+import { actualPanelFaces } from "./asmPanelGeometry.js";
+import { totalNumberofPanels } from "./tdprocessor.js";
 
 
 
@@ -33,16 +36,16 @@ function getMainHorizontalBolts(towerData, panelElevations) {
     // write new logic which takes into account all the edge cases.
     // 1. recognise the panel face
     // 2. depending upon the panel face, take action
+    let panelNumberFromBottom = totalNumberofPanels;
     towerData.forEach((line, lineNumber) => {
         if(line.includes('FACE')) {
-            const currentPanelFace = line[1]
+            const currentPanelFace = actualPanelFaces[panelNumberFromBottom - 1]
             if (panelFacesHavingMainHorizontals.includes(currentPanelFace)) {                  // include the cases where faces have main horizontals
                 processMainHorizontalBoltsDirect(currentPanelFace, lineNumber, towerData) 
             } else if (panelFacesNotHavingMainHorizontals.includes(currentPanelFace)) {        // include the cases where faces are of X type (X0, XH1, XH3 etc) and D0 types
                 processIndirectMainHorizontalBolts(currentPanelFace, lineNumber, towerData)
-            }   
-                
-               
+            }       
+            panelNumberFromBottom--;
         }
     });
 
@@ -72,36 +75,54 @@ function processMainHorizontalBoltsDirect(panelFace, lineNumber, towerData) {
     // searching for the bolt data
     for (let i = lineNumber; i < lineNumber + 3; i++) {             // keeping the search range short as bolt should occur here
         if (towerData[i].join(' ').match(/BOLT.*\bH1?\b/)) {
+
             towerData[i].forEach((word, wordNumber) => {
                 if(word.match(/\bH1?\b/)) {
                     const numberOfBolts = parseInt(towerData[i][wordNumber + 1])
                     if (!isNaN(numberOfBolts)) {
+                        console.log(towerData[i].join(' '));
                         mainHorizontalBoltNumber.unshift(numberOfBolts)
+                        if (numberOfBolts != 0) {
+                            const boltData = towerData[i][wordNumber + 2]
+    
+                            const boltDia = getBoltDia(boltData)
+                            mainHorizontalBoltDia.unshift(boltDia)
+    
+                            const boltGrade = getBoltGrade(boltData)
+                            mainHorizontalBoltGrade.unshift(boltGrade)
+                            
+                            const boltConnectionType = getBoltConnectionType(boltData)
+                            mainHorizontalBoltConnectionType.unshift(boltConnectionType)
+                        } else {
+                            // if written only H1 0
+                            const boltData = 'M16-8'
 
-                        const boltData = towerData[i][wordNumber + 2]
-
-                        const boltDia = getBoltDia(boltData)
-                        mainHorizontalBoltDia.unshift(boltDia)
-
-                        const boltGrade = getBoltGrade(boltData)
-                        mainHorizontalBoltGrade.unshift(boltGrade)
-                        
-                        const boltConnectionType = getBoltConnectionType(boltData)
-                        mainHorizontalBoltConnectionType.unshift(boltConnectionType)
+                            const boltDia = getBoltDia(boltData)
+                            mainHorizontalBoltDia.unshift(boltDia)
+    
+                            const boltGrade = getBoltGrade(boltData)
+                            mainHorizontalBoltGrade.unshift(boltGrade)
+                            
+                            const boltConnectionType = getBoltConnectionType(boltData)
+                            mainHorizontalBoltConnectionType.unshift(boltConnectionType)
+                        }
                     }
                 }
             });
+
             return;    // breaks out of the loop once it is matched for that panel
         } else if (towerData[i].join(' ').match(/\bBOLT\b.*\bLEG\b/)) {      // Add an else condition that will add 0 bolts if H1 or H boltdata is not given at all due to mistake in TD.
             mainHorizontalBoltNumber.unshift(0)
 
-            const boltDia = 16
+            const boltData = 'M16-8'
+
+            const boltDia = getBoltDia(boltData)
             mainHorizontalBoltDia.unshift(boltDia)
 
-            const boltGrade = 'Grade 8.8'
+            const boltGrade = getBoltGrade(boltData)
             mainHorizontalBoltGrade.unshift(boltGrade)
             
-            const boltConnectionType = 'S.SHEAR'
+            const boltConnectionType = getBoltConnectionType(boltData)
             mainHorizontalBoltConnectionType.unshift(boltConnectionType)
         }
 
@@ -145,13 +166,15 @@ function processIndirectMainHorizontalBolts(currentPanelFace, lineNumber, towerD
         } else if (towerData[i].join(' ').match(/\bBOLT\b.*\bLEG\b/)) {
             mainHorizontalBoltNumber.unshift(0)
 
-            const boltDia = 16
+            const boltData = 'M16-8'
+
+            const boltDia = getBoltDia(boltData)
             mainHorizontalBoltDia.unshift(boltDia)
 
-            const boltGrade = 'Grade 8.8'
+            const boltGrade = getBoltGrade(boltData)
             mainHorizontalBoltGrade.unshift(boltGrade)
             
-            const boltConnectionType = 'S.SHEAR'
+            const boltConnectionType = getBoltConnectionType(boltData)
             mainHorizontalBoltConnectionType.unshift(boltConnectionType)
             
             return
@@ -160,59 +183,4 @@ function processIndirectMainHorizontalBolts(currentPanelFace, lineNumber, towerD
 
     // searching for the bolt data
 
-}
-
-function getBoltDia(boltData) {
-    // console.log('panel data: ', boltData);
-    const BoltDataAndGrade = boltData.split('-')
-    const boltDia = parseInt(BoltDataAndGrade[0].match(/\d+/))
-    return boltDia
-}
-
-function getBoltGrade(boltData) {
-    // console.log('panel data: ', boltData);
-    const BoltDataAndGrade = boltData.split('-')
-    let boltGrade;
-    if (BoltDataAndGrade[1].length == 1) {
-        boltGrade = BoltDataAndGrade[1]
-    } else {
-        const lastCharacter = BoltDataAndGrade[1].charAt(BoltDataAndGrade[1].length -1)
-        // console.log(lastCharacter);
-        if (lastCharacter == 0) {
-            boltGrade = BoltDataAndGrade[1]
-        } else {
-            boltGrade = BoltDataAndGrade[1].slice(0,-1)
-        }
-    }
-
-    //Check for the grade and returns ASM grade value
-    if (boltGrade == '4') {
-        return 'Class 4.8'
-    } else if (boltGrade == '5') {
-        return 'Grade 5.6/5.8'
-    } else if (boltGrade == '6') {
-        return 'Class 6.8'
-    } else if (boltGrade == '8') {
-        return 'Grade 8.8'
-    } if (boltGrade == '10') {
-        return 'Class 10.9'
-    } else return 'Grade not in ASM DataBase'
-}
-
-function getBoltConnectionType(BoltData) {
-    const BoltDataAndGrade = BoltData.split('-')
-    let boltConnectionType;
-    if (BoltDataAndGrade[1].length == 1) {
-        boltConnectionType = 'S.SHEAR'
-    } else {
-        const lastCharacter = BoltDataAndGrade[1].charAt(BoltDataAndGrade[1].length - 1)
-        if (lastCharacter == 2) {
-            boltConnectionType = 'D.SHEAR'
-        } else if (lastCharacter == 0) {              // if grade 10
-            boltConnectionType = 'S.SHEAR'
-        } else if (lastCharacter == 'T') {
-            boltConnectionType = 'TENSION'
-        } else boltConnectionType = 'Error in Connection Type'
-    }
-    return boltConnectionType
 }
