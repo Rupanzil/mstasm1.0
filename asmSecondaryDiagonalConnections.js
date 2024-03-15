@@ -13,6 +13,8 @@ logic breakdown:
 import { panelsNotHavingSecondaryDiagonals, panelHavingSecondayDiagonals } from "./asmPanelSections.js";
 import { getBoltDia, getBoltGrade, getBoltConnectionType } from "./boltDataProcessing.js";
 import { panelFacesDB } from "./panelFaceDB.js";
+import { actualPanelFaces } from "./asmPanelGeometry.js";
+import { totalNumberofPanels } from "./tdprocessor.js";
 
 
 let secondaryDiagonalBoltNumber = []
@@ -20,13 +22,14 @@ let secondaryDiagonalBoltGrade = []
 let secondaryDiagonalBoltDia = []
 let secondaryDiagonalBolConnectionType = []
 let asmSecondaryDiagonalBolts = []
+let panelNumberFromBottom;
 
 export function createSecondaryDiagonalConnections(towerData, panelBaseElevations, panelElevations) {
-
+    panelNumberFromBottom = totalNumberofPanels;
     towerData.forEach((line, lineNumber) => {
         if (line.includes('FACE')) {
-            const currentPanelFace = line[1]
-            // console.log(currentPanelFace);
+            const currentPanelFace = actualPanelFaces[panelNumberFromBottom - 1]
+            console.log('Panel Face being processed: ', currentPanelFace);
             if (panelsNotHavingSecondaryDiagonals.includes(currentPanelFace)) {
                 const numberOfBolts = 0
                 secondaryDiagonalBoltNumber.unshift(numberOfBolts)
@@ -45,7 +48,7 @@ export function createSecondaryDiagonalConnections(towerData, panelBaseElevation
             } else if (panelHavingSecondayDiagonals.includes(currentPanelFace)) {
                 // update these as new panel faces are added.
                 const panelsHavingSameSecondaryDiagonals = ['XH3', 'K1', 'K2', 'M1', 'M2']
-                const panelsHavingDifferentSecondaryDiagonals = ['XH3A', 'K2A']
+                const panelsHavingDifferentSecondaryDiagonals = ['XH3A', 'XTR', 'K2A', 'M2A']
 
                 if (panelsHavingSameSecondaryDiagonals.includes(currentPanelFace)) {
                     getBoltDataSameDiagonals(lineNumber, towerData)
@@ -53,6 +56,7 @@ export function createSecondaryDiagonalConnections(towerData, panelBaseElevation
                     getBoltDataDiffDiagonals(lineNumber, towerData, currentPanelFace)
                 }
             } 
+            panelNumberFromBottom--;
         }
     })
 
@@ -82,18 +86,33 @@ function getBoltDataSameDiagonals (lineNumber, towerData) {
                 if (word.match(/\bR1?\b/)) {
                     const boltNumber = parseInt(towerData[i][wordNumber + 1])
                     if (!isNaN(boltNumber)) {
-                        const boltData = towerData[i][wordNumber + 2]
-                        
-                        secondaryDiagonalBoltNumber.unshift(boltNumber)
-    
-                        const boltDia = getBoltDia(boltData)
-                        secondaryDiagonalBoltDia.unshift(boltDia)
-                        
-                        const boltGrade = getBoltGrade(boltData)
-                        secondaryDiagonalBoltGrade.unshift(boltGrade)
-                        
-                        const boltConnectionType =  getBoltConnectionType(boltData)
-                        secondaryDiagonalBolConnectionType.unshift(boltConnectionType)
+                        if (boltNumber === 0) {
+                            const boltData = 'M12-8'
+                            
+                            secondaryDiagonalBoltNumber.unshift(boltNumber)
+        
+                            const boltDia = getBoltDia(boltData)
+                            secondaryDiagonalBoltDia.unshift(boltDia)
+                            
+                            const boltGrade = getBoltGrade(boltData)
+                            secondaryDiagonalBoltGrade.unshift(boltGrade)
+                            
+                            const boltConnectionType =  getBoltConnectionType(boltData)
+                            secondaryDiagonalBolConnectionType.unshift(boltConnectionType)
+                        } else {
+                            const boltData = towerData[i][wordNumber + 2]
+                            
+                            secondaryDiagonalBoltNumber.unshift(boltNumber)
+        
+                            const boltDia = getBoltDia(boltData)
+                            secondaryDiagonalBoltDia.unshift(boltDia)
+                            
+                            const boltGrade = getBoltGrade(boltData)
+                            secondaryDiagonalBoltGrade.unshift(boltGrade)
+                            
+                            const boltConnectionType =  getBoltConnectionType(boltData)
+                            secondaryDiagonalBolConnectionType.unshift(boltConnectionType)
+                        }
                     }
                 }
                 return;
@@ -118,18 +137,33 @@ function getBoltDataDiffDiagonals (lineNumber, towerData, currentPanelFace) {
                 if (word.match(/\bR\b/)) {
                     const boltNumber = parseInt(towerData[i][wordNumber + 1])
                     if (!isNaN(boltNumber)) {
-                        const boltData = towerData[i][wordNumber + 2]
-                        
-                        secondaryDiagonalBoltNumber.unshift(boltNumber)
-    
-                        const boltDia = getBoltDia(boltData)
-                        secondaryDiagonalBoltDia.unshift(boltDia)
-                        
-                        const boltGrade = getBoltGrade(boltData)
-                        secondaryDiagonalBoltGrade.unshift(boltGrade)
-                        
-                        const boltConnectionType =  getBoltConnectionType(boltData)
-                        secondaryDiagonalBolConnectionType.unshift(boltConnectionType)
+                        if (boltNumber === 0) {
+                            const boltData = 'M12-8'
+                            
+                            secondaryDiagonalBoltNumber.unshift(boltNumber)
+        
+                            const boltDia = getBoltDia(boltData)
+                            secondaryDiagonalBoltDia.unshift(boltDia)
+                            
+                            const boltGrade = getBoltGrade(boltData)
+                            secondaryDiagonalBoltGrade.unshift(boltGrade)
+                            
+                            const boltConnectionType =  getBoltConnectionType(boltData)
+                            secondaryDiagonalBolConnectionType.unshift(boltConnectionType)
+                        } else {
+                            const boltData = towerData[i][wordNumber + 2]
+                            
+                            secondaryDiagonalBoltNumber.unshift(boltNumber)
+        
+                            const boltDia = getBoltDia(boltData)
+                            secondaryDiagonalBoltDia.unshift(boltDia)
+                            
+                            const boltGrade = getBoltGrade(boltData)
+                            secondaryDiagonalBoltGrade.unshift(boltGrade)
+                            
+                            const boltConnectionType =  getBoltConnectionType(boltData)
+                            secondaryDiagonalBolConnectionType.unshift(boltConnectionType)
+                        }
                     }
                 }
                 return;
@@ -147,18 +181,33 @@ function getBoltDataDiffDiagonals (lineNumber, towerData, currentPanelFace) {
                 if ( word == secDiagonalId ) {
                     const boltNumber = parseInt(towerData[i][wordNumber + 1])
                     if (!isNaN(boltNumber)) {
-                        const boltData = towerData[i][wordNumber + 2]
-                        
-                        secondaryDiagonalBoltNumber.unshift(boltNumber)
-    
-                        const boltDia = getBoltDia(boltData)
-                        secondaryDiagonalBoltDia.unshift(boltDia)
-                        
-                        const boltGrade = getBoltGrade(boltData)
-                        secondaryDiagonalBoltGrade.unshift(boltGrade)
-                        
-                        const boltConnectionType =  getBoltConnectionType(boltData)
-                        secondaryDiagonalBolConnectionType.unshift(boltConnectionType)
+                        if (boltNumber === 0) {
+                            const boltData = 'M12-8'
+                            
+                            secondaryDiagonalBoltNumber.unshift(boltNumber)
+        
+                            const boltDia = getBoltDia(boltData)
+                            secondaryDiagonalBoltDia.unshift(boltDia)
+                            
+                            const boltGrade = getBoltGrade(boltData)
+                            secondaryDiagonalBoltGrade.unshift(boltGrade)
+                            
+                            const boltConnectionType =  getBoltConnectionType(boltData)
+                            secondaryDiagonalBolConnectionType.unshift(boltConnectionType)
+                        } else {
+                            const boltData = towerData[i][wordNumber + 2]
+                            
+                            secondaryDiagonalBoltNumber.unshift(boltNumber)
+        
+                            const boltDia = getBoltDia(boltData)
+                            secondaryDiagonalBoltDia.unshift(boltDia)
+                            
+                            const boltGrade = getBoltGrade(boltData)
+                            secondaryDiagonalBoltGrade.unshift(boltGrade)
+                            
+                            const boltConnectionType =  getBoltConnectionType(boltData)
+                            secondaryDiagonalBolConnectionType.unshift(boltConnectionType)
+                        }
                     }
                     return;
                 }

@@ -24,7 +24,7 @@ export function createSecondaryHorizontalConnections(towerData, panelBaseElevati
     towerData.forEach((line, lineNumber) => {
         if (line.includes('FACE')) {
             const currentPanelFace = actualPanelFaces[panelNumberFromBottom - 1];
-            console.log('current panel face here is ', currentPanelFace);
+            // console.log('current panel face here is ', currentPanelFace);
             if (panelsHavingSecondaryHorizontals.includes(currentPanelFace)) {
                 // XH3 and XH3A are processed separately
                 if (secondaryHorizontalIsH1.includes(currentPanelFace)) {
@@ -39,12 +39,12 @@ export function createSecondaryHorizontalConnections(towerData, panelBaseElevati
         }
     });
     
-    console.log(panelsHavingSecondaryHorizontals, panelsNotHavingSecondaryHorizontals);
+    // console.log(panelsHavingSecondaryHorizontals, panelsNotHavingSecondaryHorizontals);
     
-    console.log('Number of bolts: ', secondaryHorizontalBoltNumber);
-    console.log('Grade of bolts: ', secondaryHorizontalBoltGrade);
-    console.log('dia of bolts: ', secondaryHorizontalBoltDia);
-    console.log('connection type of bolts: ', secondaryHorizontalBolConnectionType);
+    // console.log('Number of bolts: ', secondaryHorizontalBoltNumber);
+    // console.log('Grade of bolts: ', secondaryHorizontalBoltGrade);
+    // console.log('dia of bolts: ', secondaryHorizontalBoltDia);
+    // console.log('connection type of bolts: ', secondaryHorizontalBolConnectionType);
 
     panelBaseElevations.forEach((baseElevation, i) => {
         const currentLine = `${baseElevation}\t${panelElevations[i]}\t${secondaryHorizontalBolConnectionType[i]}\t${secondaryHorizontalBoltNumber[i]}\t${secondaryHorizontalBoltDia[i]}\t\t\t${secondaryHorizontalBoltGrade[i]}\tYES\t1\t0\tNO\t0\t\t\tSINGLE THICK.\tSINGLE THICK.`
@@ -58,7 +58,7 @@ export function createSecondaryHorizontalConnections(towerData, panelBaseElevati
 }
 
 function processBoltsForH1(towerData, lineNumber) {
-    console.log('bolts processed for H1');
+    // console.log('bolts processed for H1');
     for ( let i = lineNumber; i < lineNumber + 5; i++) {
         if (towerData[i].join(' ').match(/\bBOLT\b.*\bH1?\b/)) {
 
@@ -108,7 +108,7 @@ function processBoltsForH1(towerData, lineNumber) {
 }
 
 function processBoltsForR1(towerData, lineNumber, currentPanelFace) {
-    console.log('bolts processed for R1');
+    // console.log('bolts processed for R1');
     for ( let i = lineNumber; i < lineNumber + 5; i++) {
         if (towerData[i].join(' ').match(/\bBOLT\b.*\bR1?\b/)) {
             const secHorizontalIdRegex = panelFacesDB[currentPanelFace]['secondaryHorizontal'][0]      
@@ -157,7 +157,7 @@ function processBoltsForR1(towerData, lineNumber, currentPanelFace) {
 }
 
 function processBoltsForNoSecondaryHorizontals() {
-    console.log('Bolts processed for no sec horizontals');
+    // console.log('Bolts processed for no sec horizontals');
     const numberOfBolts = 0
     secondaryHorizontalBoltNumber.unshift(numberOfBolts)
     
