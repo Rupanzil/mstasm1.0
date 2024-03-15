@@ -1,5 +1,4 @@
 const panelFacesDB = {
-
     // ------------ X-FACES---------------
     'X0': {
         leg: 'LEG',
