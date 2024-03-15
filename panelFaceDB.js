@@ -204,7 +204,7 @@ const panelFacesDB = {
         mainDiagonal: 'BR1',
         mainHorizontal: /H|H1/,
         secondaryDiagonals: /\bR1?\b/,
-        secondaryHorizontal: [/\bR1?/],
+        secondaryHorizontal: [/\bR1?\b/],
         panelType: 'V',
         subdivide: 2
     },

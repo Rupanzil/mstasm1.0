@@ -314,7 +314,7 @@ function createSecondaryHorizontals(towerData, totalNumberofPanels) {
         if (line.includes('FACE')) {
             let currentPanelFace = actualPanelFaces[panelNumberFromBottom - 1];
             if (panelsHavingSecHorizontals.includes(currentPanelFace)) {
-                // console.log('These faces have sec horizontals', currentPanelFace);
+                console.log('These faces have sec horizontals', currentPanelFace);
                 let currentSecPanelAndHorizontalId = getSecondaryHorizontals(line, panelFacesDB[currentPanelFace].secondaryHorizontal)
                 secHorizontalPanelNumberAndId.unshift([panelNumberFromBottom, currentSecPanelAndHorizontalId])
             } else if (currentPanelFace == 'X' || currentPanelFace == 'X0') {
