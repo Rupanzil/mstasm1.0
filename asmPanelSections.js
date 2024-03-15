@@ -3,7 +3,7 @@ import { uniqueSectionAndGrade } from "./asmSelectedSection.js";
 import { getSecDiagonalsForSameSecDiagonals, getSecDiagonalsForDifferentSecDiagonals } from "./asmSecondaryDiagonals.js";
 import { getSecondaryHorizontals } from "./asmSecondaryHorizontal.js";
 import { processIdsAndGrade } from "./processMemberIdsAndGrade.js";
-import { actualPanelFaces } from "./asmPanelGeometry.js";
+import { actualPanelFaces, asmPanelGeometryComments } from "./asmPanelGeometry.js";
 
 
 let legMSTIds = [];
@@ -399,7 +399,7 @@ export function createPanelSection(towerData, topElevations, totalNumberofPanels
     let asmPanelSections = [];
 
     for (let i = 0; i < totalNumberofPanels; i++) {
-        let currentPanelSectionLine = `${topElevations[i]}\t${asmLegIds[i]}\t${asmMainDiagonalIds[i]}\t${asmMainHorizontalIds[i]}\t${asmSecondaryDiagonalIds[i]}\t${asmSecondaryHorizontalIds[i]}`
+        let currentPanelSectionLine = `${topElevations[i]}\t${asmLegIds[i]}\t${asmMainDiagonalIds[i]}\t${asmMainHorizontalIds[i]}\t${asmSecondaryDiagonalIds[i]}\t${asmSecondaryHorizontalIds[i]}\t0\t0\t\t\t\t${asmPanelGeometryComments[i]}`
         asmPanelSections.push(currentPanelSectionLine)
     }
 

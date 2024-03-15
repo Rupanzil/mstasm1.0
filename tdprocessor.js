@@ -135,7 +135,7 @@ let invertedOrNot = []
 
 function checkInvertedPanels(towerData) {
     towerData.forEach( line => {
-        if (line.join(' ').match(/^(?=.*\bFACE\b)(?=.*\bINV(?:ERT)?\b).*/)) {
+        if (line.join(' ').match(/^(?=.*\bFACE\b)(?=.*\bINVERT|INV(?:ERTED)?\b).*/)) {
             invertedOrNot.unshift(true)
         } else if (line.join(' ').match(/\bFACE\b/)) {
             invertedOrNot.unshift(false)

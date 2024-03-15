@@ -110,4 +110,4 @@ function processPanelFaceForGeometry(currentPanelFace, panelElevations, topWidth
 function getPanelGeometry() {
  return;
 }
-export { createPanelGeometry, actualPanelFaces };
+export { createPanelGeometry, actualPanelFaces, asmPanelGeometryComments };

@@ -25,7 +25,7 @@ export function getBoltGrade(boltData) {
     if (boltGrade == '4') {
         return 'Class 4.8'
     } else if (boltGrade == '5') {
-        return 'Grade 5.6/5.8'
+        return 'Class 5.8'
     } else if (boltGrade == '6') {
         return 'Class 6.8'
     } else if (boltGrade == '8') {
