@@ -41,7 +41,7 @@ let panelElevations = [];
 let towerTotalHeight = 0;
 panelHeightsFromBottom.forEach( (panelHeight) => {
     towerTotalHeight += panelHeight;
-    panelElevations.push(towerTotalHeight)
+    panelElevations.push(towerTotalHeight.toFixed(2))
 })
 
 // create an array containing the number of panels in each section

@@ -29,7 +29,7 @@ export function createSecondaryDiagonalConnections(towerData, panelBaseElevation
     towerData.forEach((line, lineNumber) => {
         if (line.includes('FACE')) {
             const currentPanelFace = actualPanelFaces[panelNumberFromBottom - 1]
-            console.log('Panel Face being processed: ', currentPanelFace);
+            // console.log('Panel Face being processed: ', currentPanelFace);
             if (panelsNotHavingSecondaryDiagonals.includes(currentPanelFace)) {
                 const numberOfBolts = 0
                 secondaryDiagonalBoltNumber.unshift(numberOfBolts)

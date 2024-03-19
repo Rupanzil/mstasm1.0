@@ -314,7 +314,7 @@ function createSecondaryHorizontals(towerData, totalNumberofPanels) {
         if (line.includes('FACE')) {
             let currentPanelFace = actualPanelFaces[panelNumberFromBottom - 1];
             if (panelsHavingSecHorizontals.includes(currentPanelFace)) {
-                console.log('These faces have sec horizontals', currentPanelFace);
+                // console.log('These faces have sec horizontals', currentPanelFace);
                 let currentSecPanelAndHorizontalId = getSecondaryHorizontals(line, panelFacesDB[currentPanelFace].secondaryHorizontal)
                 secHorizontalPanelNumberAndId.unshift([panelNumberFromBottom, currentSecPanelAndHorizontalId])
             } else if (currentPanelFace == 'X' || currentPanelFace == 'X0') {
@@ -345,11 +345,11 @@ function createSecondaryHorizontals(towerData, totalNumberofPanels) {
             let currentPanelSecHorizontalSection = []
             secHorizontal[1].forEach(secHorizontalId => {
                 if (!secHorizontalId == 0) {
-                    console.log('Sec Horizontal Id is: ', secHorizontalId);
+                    // console.log('Sec Horizontal Id is: ', secHorizontalId);
 
                     towerData.forEach(line => {
                         if(line.includes(String(secHorizontalId)) && line.includes('CONNECT')) {
-                            console.log('Current line being matched here is :', line);
+                            // console.log('Current line being matched here is :', line);
                             currentPanelSecHorizontalSection.push(`${line[1]} ${line[6]}`)
                         }
                     });
