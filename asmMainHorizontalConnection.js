@@ -169,16 +169,6 @@ function processIndirectMainHorizontalBolts(currentPanelFace, lineNumber, towerD
                             }
                         }
                     }
-
-
-
-                    /* towerData[k].forEach((word, wordNumber) => {
-                        if(word.match(/\bPB1?\b/)) {
-                            }
-                            return;   // as only one member can be a main horizontal, so to breakout when one is matched
-                        }
-                    }); */
-
                     return;
                 }
                 
