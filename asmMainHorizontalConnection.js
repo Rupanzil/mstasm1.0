@@ -140,7 +140,7 @@ function processIndirectMainHorizontalBolts(currentPanelFace, lineNumber, towerD
     for (let i = lineNumber; i < lineNumber + 5; i++) {
 
         // match lines that contain 'PLAN', may or may not contain 'TOP', and will return false if 'XIP' or 'BTM' is present in the line
-        if (towerData[i].join(' ').match(/\bPLAN\b(?:(?!.*\b(XIP|BTM)\b).)*(?=.*\bTOP\b)?/)) {
+        if (towerData[i].join(' ').match(/\bPLAN\b(?!.*\b(XIP|BTM)\b)/)) {
             console.log('Line currently matched is ', towerData[i].join(' '), 'Panel Face: ', currentPanelFace);
 
             for (let k = i; k < i + 2; k++) {
