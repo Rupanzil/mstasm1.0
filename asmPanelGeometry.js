@@ -16,6 +16,12 @@ topElevation\tPanelType\tSubdivide\tTopWidth\tPanelHeight\tCrankRatio\tComments\
 
 */
 
+/*
+need an array of NDs, NTRs and PB positions
+this will make processing for panels easy
+*/
+
+
 let asmPanels = []
 let asmSubdivide = []
 let asmPanelGeometry = []
@@ -82,6 +88,11 @@ function processPanelFaceForGeometry(currentPanelFace, panelElevations, topWidth
         // and non inverted K type panels will be converted to K2
         if (isPanelInverted) {
             // console.log('Panel not processed correctly', currentPanelFace, 'and is inverted');
+            // special processing for KM panels
+            // if ( currentPanelFace == 'KM') {
+            //     processForKMFace( currentPanelFace, isPanelInverted)
+            // }
+            
             currentPanelFace = 'M2'
             asmPanelType = panelFacesDB[currentPanelFace]['panelType']
             asmPanelSubdivision = panelFacesDB[currentPanelFace]['subdivide']

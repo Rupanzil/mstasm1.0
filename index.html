@@ -1,127 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MST to ASM</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./style.css">
-</head>
-<body>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
     <header>
-        <h1>MST - ASM Conversion App</h1>
+      <h1>MST - ASM Conversion App</h1>
     </header>
     <main>
-        <div class="main">
-            <div class="left-container">
-                <div class="box td-text">
-                    <p>Paste TD file below</p>
-                    <textarea id="td-text" placeholder="Paste your td file here..." required></textarea>
-                    <button id="process-td">Process TD file</button>
-                </div>
-                <div class="box geometry">
-                    <p>Panel Geometry</p>
-                    <p id="base-width"></p>
-                    <p id="num-of-faces"></p>
-                    <textarea class="output" id="asm-panel-geometry" placeholder="copy from here..."></textarea>
-                    <button onclick="copyToClipboard('asm-panel-geometry')">Copy</button>
-                </div>
-                <div class="box selected-sections">
-                    <p>Selected Sections</p>
-                    <textarea class="output" id="asm-selected-sections" placeholder="copy from here..."></textarea>
-                    <button onclick="copyToClipboard('asm-selected-sections')">Copy</button>
-                </div>
-                <div class="box panel-sections">
-                    <p>Panel Sections</p>
-                    <textarea class="output" id="asm-panel-sections" placeholder="copy from here..."></textarea>
-                    <button onclick="copyToClipboard('asm-panel-sections')">Copy</button>
-                </div>
-                <div class="box leg-connections">
-                    <p>Leg Connection</p>
-                    <textarea class="output" id="asm-leg-connection" placeholder="copy from here..."></textarea>
-                    <button onclick="copyToClipboard('asm-leg-connection')">Copy</button>
-                </div>
-                <div class="box main-diagonal-connections">
-                    <p>Main Diagonal Connection</p>
-                    <textarea class="output" id="asm-main-diagonal-connection" placeholder="copy from here..."></textarea>
-                    <button onclick="copyToClipboard('asm-main-diagonal-connection')">Copy</button>
-                </div>
-                <div class="box main-horizontal-connections">
-                    <p>Main Horizontal Connection</p>
-                    <textarea class="output" id="asm-main-horizontal-connection" placeholder="copy from here..."></textarea>
-                    <button onclick="copyToClipboard('asm-main-horizontal-connection')">Copy</button>
-                </div>
-                <div class="box secondary-diagonal-connections">
-                    <p>Secondary Diagonal Connection</p>
-                    <textarea class="output" id="asm-secondary-diagonal-connections" placeholder="copy from here..."></textarea>
-                    <button onclick="copyToClipboard('asm-secondary-diagonal-connections')">Copy</button>
-                </div>
-                <div class="box secondary-horizontal-connections">
-                    <p>Secondary Horizontal Connection</p>
-                    <textarea class="output" id="asm-secondary-horizontal-connections" placeholder="copy from here..."></textarea>
-                    <button onclick="copyToClipboard('asm-secondary-horizontal-connections')">Copy</button>
-                </div>
-            </div>
-            <div class="right-container">
-                <div class="right">
-                    <hr>
-                    <h3>Instructions & Assumptions</h3>
-                    <p>The main objective of this app is to facilitate the process of converting the MST data to ASM. This app is still in development, so please be careful and always verify the output.
-                        In case you face any issues or if you have any feedback then please contact <a href="mailto:rupanzilprince@delmec.ie">Rupanzil M Prince</a>.
-                    </p>
-                    <ol>
-                        <li>Refresh before starting each time</li>
-                        <li>All type of Panel faces are now being processed either directly or indirectly. Please check the comments in Panel Geometry section.</li>
-                        <li>Following panel faces are processed correctly
-                            <ul>
-                                <li>DL0, DR0, DR, DL</li>
-                                <li>XH1, XH2 (XH1 is modelled for XH2), XH3, XH3A, XTR</li>
-                                <li>K, K1, K2, K2A, M, M1, M2, M2A.</li>
-                            </ul>
-                        </li>
-                        <li>Any panel outside of the above list (for example - KMGD, KMA, KM etc.) will be processed as K2 for K-type panels and others as X0</li>
-                        <li>Plan braces needs to be added manually.</li>
-                        <li>
-                            Related to connections:
-                            <ul>
-                                <li>End and Spacing not considered.</li>
-                                <li>For Leg connections, the number of gauges considered is 4 for 8 or more bolts and 2 for less than 8 bolts.</li>
-                                <li>For other members, the number of gauges considered is 1. Change manually if needed.</li>
-                                <li>Block shear width is ignored.</li>
-                                <li>Gusset plate is not considered.</li>
-                                <li>Panels not having main horizontals will get 0 M16-8 by default.</li>
-                                <li>For panels XH3 and XH3A, the bolt detail of the horizontal in the middle will be applied to all secondary horizontals.</li>
-                            </ul>
-                        </li>
-                        <li>In TD, if the PLAN is at BTM position, the app will not work properly. So, proceed with caution.</li>
-                        <li>Only EA, CHS, ASX and ASXC are processed correctly. Other section type will be included in future versions.</li>
-                    </ol>
-                    <hr>
-                    <h3>Release Notes</h3>
-                    <li><b>V1.1</b> : App is now not crashing for any type of Panel face.</li>
-                    <li><b>V1.2</b> : App will now read "INV", "INVERT" and "INVERTED" for inverted K-Panels. <br>Comments also added in Panel Sections.<br>"Grade 5.6/5.8"
-                    changed to "Class 5.8"</li>
-                    <li><b>V1.3</b> : App will now read main horizontal bolts correctly.</li>
-                </div>
-            </div>
+      <div class="main">
+        <div class="left-container">
+          <div class="box td-text">
+            <p>Paste TD file below</p>
+            <textarea
+              id="td-text"
+              placeholder="Paste your td file here..."
+              required
+            ></textarea>
+            <button id="process-td">Process TD file</button>
+          </div>
+          <div class="box geometry">
+            <p>Panel Geometry</p>
+            <p id="base-width"></p>
+            <p id="num-of-faces"></p>
+            <textarea
+              class="output"
+              id="asm-panel-geometry"
+              placeholder="copy from here..."
+            ></textarea>
+            <button onclick="copyToClipboard('asm-panel-geometry')">
+              Copy
+            </button>
+          </div>
+          <div class="box selected-sections">
+            <p>Selected Sections</p>
+            <textarea
+              class="output"
+              id="asm-selected-sections"
+              placeholder="copy from here..."
+            ></textarea>
+            <button onclick="copyToClipboard('asm-selected-sections')">
+              Copy
+            </button>
+          </div>
+          <div class="box panel-sections">
+            <p>Panel Sections</p>
+            <textarea
+              class="output"
+              id="asm-panel-sections"
+              placeholder="copy from here..."
+            ></textarea>
+            <button onclick="copyToClipboard('asm-panel-sections')">
+              Copy
+            </button>
+          </div>
+          <div class="box leg-connections">
+            <p>Leg Connection</p>
+            <textarea
+              class="output"
+              id="asm-leg-connection"
+              placeholder="copy from here..."
+            ></textarea>
+            <button onclick="copyToClipboard('asm-leg-connection')">
+              Copy
+            </button>
+          </div>
+          <div class="box main-diagonal-connections">
+            <p>Main Diagonal Connection</p>
+            <textarea
+              class="output"
+              id="asm-main-diagonal-connection"
+              placeholder="copy from here..."
+            ></textarea>
+            <button onclick="copyToClipboard('asm-main-diagonal-connection')">
+              Copy
+            </button>
+          </div>
+          <div class="box main-horizontal-connections">
+            <p>Main Horizontal Connection</p>
+            <textarea
+              class="output"
+              id="asm-main-horizontal-connection"
+              placeholder="copy from here..."
+            ></textarea>
+            <button onclick="copyToClipboard('asm-main-horizontal-connection')">
+              Copy
+            </button>
+          </div>
+          <div class="box secondary-diagonal-connections">
+            <p>Secondary Diagonal Connection</p>
+            <textarea
+              class="output"
+              id="asm-secondary-diagonal-connections"
+              placeholder="copy from here..."
+            ></textarea>
+            <button
+              onclick="copyToClipboard('asm-secondary-diagonal-connections')"
+            >
+              Copy
+            </button>
+          </div>
+          <div class="box secondary-horizontal-connections">
+            <p>Secondary Horizontal Connection</p>
+            <textarea
+              class="output"
+              id="asm-secondary-horizontal-connections"
+              placeholder="copy from here..."
+            ></textarea>
+            <button
+              onclick="copyToClipboard('asm-secondary-horizontal-connections')"
+            >
+              Copy
+            </button>
+          </div>
         </div>
+        <div class="right-container">
+          <div class="right">
+            <hr />
+            <h3>Instructions & Assumptions</h3>
+            <p>
+              The main objective of this app is to facilitate the process of
+              converting the MST data to ASM. This app is still in development,
+              so please be careful and always verify the output. In case you
+              face any issues or if you have any feedback then please contact
+              <a href="mailto:rupanzilprince@delmec.ie">Rupanzil M Prince</a>.
+            </p>
+            <ol>
+              <li>Refresh before starting each time</li>
+              <li>
+                All type of Panel faces are now being processed either directly
+                or indirectly. Please check the comments in Panel Geometry
+                section.
+              </li>
+              <li>
+                Following panel faces are processed correctly
+                <ul>
+                  <li>DL0, DR0, DR, DL</li>
+                  <li>XH1, XH2 (XH1 is modelled for XH2), XH3, XH3A, XTR</li>
+                  <li>K, K1, K2, K2A, M, M1, M2, M2A.</li>
+                </ul>
+              </li>
+              <li>
+                Any panel outside of the above list (for example - KMGD, KMA, KM
+                etc.) will be processed as K2 for K-type panels and others as X0
+              </li>
+              <li>Plan braces needs to be added manually.</li>
+              <li>
+                Related to connections:
+                <ul>
+                  <li>End and Spacing not considered.</li>
+                  <li>
+                    For Leg connections, the number of gauges considered is 4
+                    for 8 or more bolts and 2 for less than 8 bolts.
+                  </li>
+                  <li>
+                    For other members, the number of gauges considered is 1.
+                    Change manually if needed.
+                  </li>
+                  <li>Block shear width is ignored.</li>
+                  <li>Gusset plate is not considered.</li>
+                  <li>
+                    Panels not having main horizontals will get 0 M16-8 by
+                    default.
+                  </li>
+                  <li>
+                    For panels XH3 and XH3A, the bolt detail of the horizontal
+                    in the middle will be applied to all secondary horizontals.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                In TD, if the PLAN is at BTM position, the app will not work
+                properly. So, proceed with caution.
+              </li>
+              <li>
+                Only EA, CHS, ASX and ASXC are processed correctly. Other
+                section type will be included in future versions.
+              </li>
+            </ol>
+            <hr />
+            <h3>Release Notes</h3>
+            <li>
+              <b>V1.1</b> : App is now not crashing for any type of Panel face.
+            </li>
+            <li>
+              <b>V1.2</b> : App will now read "INV", "INVERT" and "INVERTED" for
+              inverted K-Panels. <br />Comments also added in Panel Sections.<br />"Grade
+              5.6/5.8" changed to "Class 5.8"
+            </li>
+            <li>
+              <b>V1.3</b> : App will now read main horizontal bolts correctly.
+            </li>
+          </div>
+        </div>
+      </div>
     </main>
     <footer></footer>
-    <script type="module" src="index.js"></script>
-    <!-- <script type="module" src="script.js"></script> -->
+    <!-- <script type="module" src="index.js"></script> -->
+    <script type="module" src="script.js"></script>
     <script>
-        function copyToClipboard(elementId) {
-            const textarea = document.getElementById(elementId);
-            textarea.select();
-            document.execCommand('copy');
-            const button = textarea.nextElementSibling; // Get the sibling button element
-            button.textContent = 'Copied!!';
-            setTimeout(() => {
-                button.textContent = 'Copy';
-            }, 2000);
-        }
+      function copyToClipboard(elementId) {
+        const textarea = document.getElementById(elementId)
+        textarea.select()
+        document.execCommand('copy')
+        const button = textarea.nextElementSibling // Get the sibling button element
+        button.textContent = 'Copied!!'
+        setTimeout(() => {
+          button.textContent = 'Copy'
+        }, 2000)
+      }
     </script>
-</body>
+  </body>
 </html>
